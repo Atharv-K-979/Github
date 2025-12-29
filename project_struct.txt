@@ -1,0 +1,30 @@
+## Console Commands
+
+1. Initialize node index.js init → creates hidden folder .s3git
+2. Add file.txt (goes to staging): node index.js add hello.txt → creates copy of the file
+3. Commit: node index.js commit "initial commit" → makes commit
+4. Push (perm. store): node index.js push → all commits pushed to s3
+5. Pull (pull latest changes): node index.js pull
+6. revert (reverts file by commit id): node index.js revert <that commit id>
+
+## Frontend Components
+1. Authenyication signup and login
+2. dashboard - three column structure github recent graph (that green graph)
+3. repository 
+4. issues
+
+## Database & Schema Model
+
+1. User schema -username , email, password ,repos, followed users,starred repos
+2.  Repository Schema - id,name,discreption,content,visibility,owner,issues,__v
+3.  Issue Schema 
+
+## API Endpoints
+1. /repo/create
+1. /repo/all
+2. /repo/:id
+3. /repo/name/:name
+4. /repo/user/:userid
+5. /repo/update/:id
+6. /repo/delete/:id
+7. /repo/toggle/:id
