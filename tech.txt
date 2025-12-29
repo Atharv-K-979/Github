@@ -1,0 +1,21 @@
+************** MERN Components ********************************
+
+1) MongoDB - Database
+2) Express.js - Backend framework
+3) React.js - Frontend framework
+4) Node.js - JavaScript runtime
+
+************ Other Technologies ******************************
+1) Bootstrap
+2) HTML
+3) CSS
+4) JS
+5) GIT
+6) Github
+
+************************ Apps ********************************
+1) Chrome
+2) VS Code
+3) Node JS
+4) AWS
+5) PACMAN
