@@ -1,0 +1,45 @@
+# =====================
+# Dependencies
+# =====================
+node_modules/
+
+# =====================
+# Local CLI repo data (IMPORTANT)
+# =====================
+.atharvGit/
+
+# =====================
+# Environment variables & secrets
+# =====================
+.env
+.env.*
+aws-config.js
+frontend/aws-config.js
+
+# =====================
+# Build / dist folders
+# =====================
+dist/
+build/
+
+# =====================
+# Logs
+# =====================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =====================
+# OS & Editor junk
+# =====================
+.DS_Store
+.vscode/
+.idea/
+
+# =====================
+# Temporary files
+# =====================
+*.tmp
+*.swp
