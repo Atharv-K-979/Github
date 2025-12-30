@@ -1,9 +1,8 @@
 const AWS = require("aws-sdk");
 
-AWS.config.update({ region: "eu-north-1" });
+AWS.config.update({ region: "ap-south-1" });
 
 const s3 = new AWS.S3();
-const S3_BUCKET = "atharvawsbucket4898";
-
+const S3_BUCKET = "atharvawsbucket4045";
 
 module.exports = { s3, S3_BUCKET };

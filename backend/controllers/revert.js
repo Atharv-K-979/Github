@@ -6,7 +6,7 @@ const readdir = promisify(fs.readdir);
 const copyFile = promisify(fs.copyFile);
 
 async function revertRepo(commitID) {
-    const repoPath = path.resolve(process.cwd(), ".apnaGit");
+    const repoPath = path.resolve(process.cwd(), ".atharvGit");
     const commitsPath = path.join(repoPath, "commits");
 
     try {
