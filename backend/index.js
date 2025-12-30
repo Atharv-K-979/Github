@@ -1,11 +1,11 @@
-// const express = require("express");
-// const dotenv = require("dotenv");
-// const cors = require("cors");
-// const mongoose = require("mongoose");
-// const bodyParser = require("body-parser");
-// const http = require("http");
-// const { Server } = require("socket.io");
-// const mainRouter = require("./routes/main.router");
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const http = require("http");
+const { Server } = require("socket.io");
+const mainRouter = require("./routes/main.router");
 
 const yargs = require("yargs");
 const { hideBin } = require("yargs/helpers");
@@ -79,11 +79,8 @@ function startServer() {
         .connect(mongoURI)
         .then(() => console.log("MongoDB connected!"))
         .catch((err) => console.error("Unable to connect : ", err));
-
     app.use(cors({ origin: "*" }));
-
     app.use("/", mainRouter);
-
     let user = "test";
     const httpServer = http.createServer(app);
     const io = new Server(httpServer, {
@@ -92,7 +89,6 @@ function startServer() {
             methods: ["GET", "POST"],
         },
     });
-
     io.on("connection", (socket) => {
         socket.on("joinRoom", (userID) => {
             user = userID;
