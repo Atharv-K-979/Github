@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-console.log("LOADING user MODEL FILE")
+// console.log("LOADING user MODEL FILE")
 const UserSchema = new Schema({
     // timestamps: true,
     username: {
@@ -40,7 +40,7 @@ const UserSchema = new Schema({
 },{
     timestamps: true,
 });
-console.log("closing user MODEL FILE")
+// console.log("closing user MODEL FILE")
 // const User = mongoose.model("User", UserSchema);
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);

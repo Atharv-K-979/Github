@@ -7,7 +7,7 @@ async function createRepository(req, res) {
     const { owner, name, issues, content, description, visibility } = req.body;
     try {
         if (!name) {
-            return res.status(400).json({ error: "Repository name is required!" });
+            return res.status(400).json({ error: "Repository name is required bro !!!" });
         }
         if (!mongoose.Types.ObjectId.isValid(owner)) {
             return res.status(400).json({ error: "Invalid User ID!" });
@@ -22,7 +22,7 @@ async function createRepository(req, res) {
         });
         const result = await newRepository.save();
         res.status(201).json({
-            message: "Repository created!",
+            message: "Repository created successfully !!!",
             repositoryID: result._id,
         });
     } catch (err) {

@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const http = require("http");
 const { Server } = require("socket.io");
 const mainRouter = require("./routes/main.router");
-
+const app = express();  //error go
 const yargs = require("yargs");
 const { hideBin } = require("yargs/helpers");
 
@@ -69,10 +69,10 @@ yargs(hideBin(process.argv))
 function startServer() {
     const app = express();
     const port = process.env.PORT || 3000;
-
+// 
     app.use(bodyParser.json());
     app.use(express.json());
-
+    app.use(express.urlencoded({ extended: true }));
     const mongoURI = process.env.MONGODB_URI;
 
     mongoose

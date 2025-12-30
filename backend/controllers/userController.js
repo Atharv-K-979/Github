@@ -20,7 +20,7 @@ async function connectClient() {
 }
 
 async function signup(req, res) {
-    const { username, password, email } = req.body;
+    const { username, password, email } = req.body || {}; //tried to fix
     try {
         await connectClient();
         const db = client.db("Github");
@@ -53,7 +53,7 @@ async function signup(req, res) {
 }
 
 async function login(req, res) {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {}; //tried to fix
     try {
         await connectClient();
         const db = client.db("Github");
@@ -91,20 +91,17 @@ async function getAllUsers(req, res) {
 
 async function getUserProfile(req, res) {
     const currentID = req.params.id;
-
     try {
         await connectClient();
         const db = client.db("Github");
         const usersCollection = db.collection("users");
-
         const user = await usersCollection.findOne({
             _id: new ObjectId(currentID),
         });
-
         if (!user) {
             return res.status(404).json({ message: "User not found!" });
         }
-
+        // res.send(`User found :${user}`);
         res.send(user);
     } catch (err) {
         console.error("Error during fetching : ", err.message);
@@ -115,7 +112,6 @@ async function getUserProfile(req, res) {
 async function updateUserProfile(req, res) {
     const currentID = req.params.id;
     const { email, password } = req.body;
-
     try {
         await connectClient();
         const db = client.db("Github");
@@ -130,8 +126,8 @@ async function updateUserProfile(req, res) {
             {
                 _id: new ObjectId(currentID),
             },
-            { $set: updateFields },
-            { returnDocument: "after" }
+            {$set: updateFields},
+            { returnDocument: "after"}
         );
         if (!result.value) {
             return res.status(404).json({ message: "User not found!" });
@@ -143,9 +139,9 @@ async function updateUserProfile(req, res) {
     }
 }
 
+
 async function deleteUserProfile(req, res) {
     const currentID = req.params.id;
-
     try {
         await connectClient();
         const db = client.db("Github");
@@ -162,6 +158,7 @@ async function deleteUserProfile(req, res) {
         res.status(500).send("Server error!");
     }
 }
+// console.log("REQ BODY:", req.body);
 
 module.exports = {
     getAllUsers,

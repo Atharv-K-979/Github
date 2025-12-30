@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-console.log("LOADING issue MODEL FILE")
+// console.log("LOADING issue MODEL FILE")
 const IssueSchema = new Schema({
     // timestamps: true,
     title: {
@@ -24,6 +24,6 @@ const IssueSchema = new Schema({
 },{
     timestamps: true,
 });
-console.log("LOADING issue MODEL FILE")
+// console.log("LOADING issue MODEL FILE")
 const Issue = mongoose.model("Issue", IssueSchema);
 module.exports = Issue;
