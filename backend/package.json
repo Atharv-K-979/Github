@@ -12,6 +12,7 @@
   "type": "commonjs",
   "dependencies": {
     "fs": "^0.0.1-security",
+    "uuid": "^13.0.0",
     "yargs": "^18.0.0"
   }
 }
