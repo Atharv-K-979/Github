@@ -17,7 +17,7 @@ const { pushRepo } = require("./controllers/push");
 const { pullRepo } = require("./controllers/pull");
 const { revertRepo } = require("./controllers/revert");
 
-// dotenv.config();
+dotenv.config();
 
 yargs(hideBin(process.argv))
     .command("start", "Starts a new server", {}, startServer)
@@ -82,6 +82,9 @@ function startServer() {
     app.use(cors({ origin: "*" }));
     app.use("/", mainRouter);
     let user = "test";
+    app.get("/", (req, res) => {
+        res.send("Hello World!");
+    });
     const httpServer = http.createServer(app);
     const io = new Server(httpServer, {
         cors: {
@@ -92,20 +95,17 @@ function startServer() {
     io.on("connection", (socket) => {
         socket.on("joinRoom", (userID) => {
             user = userID;
-            console.log("=====");
+            console.log("===========");
             console.log(user);
-            console.log("=====");
+            console.log("===========");
             socket.join(userID);
         });
     });
-
     const db = mongoose.connection;
-
     db.once("open", async () => {
         console.log("CRUD operations called");
         // CRUD operations
     });
-
     httpServer.listen(port, () => {
         console.log(`Server is running on PORT ${port}`);
     });
