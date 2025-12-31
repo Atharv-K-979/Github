@@ -24,9 +24,24 @@
 4. AWS
 5. Pacman
 6. B-crypt- For pass
+7. ThunderClient
+
+
+## Authentication
+jwt 
 
 
 Packages
 1. yargs  -- to read commends from terminal
 2. aws-sdk --package for aws
 3. util -- node package used to revert (promisify)
+4. express
+5. dotenv
+6. cors
+7. mongoose
+8. body-parser
+9. http
+10.socket.io
+11. jsonwebtoken 
+12. bcrypt
+13. MongoDB
