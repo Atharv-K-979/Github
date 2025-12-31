@@ -4,13 +4,15 @@ const User = require("../models/userModel");
 const Issue = require("../models/issueModel");
 
 async function createIssue(req, res) {
-    const { title, description } = req.body;
-    const { id } = req.params;
+    const { title, description, repository } = req.body;
     try {
+        if (!repository) {
+            return res.status(400).json({ error: "Repository ID is required!" });
+        }
         const issue = new Issue({
             title,
             description,
-            repository: id,
+            repository,
         });
         await issue.save();
         res.status(201).json(issue);
@@ -34,7 +36,7 @@ async function updateIssueById(req, res) {
         issue.description = description;
         issue.status = status;
         await issue.save();
-        res.json(issue, { message: "Issue updated" });
+        res.json({ issue, message: "Issue updated" });
     } catch (err) {
         console.error("Error during issue updation : ", err.message);
         res.status(500).send("Server error");
@@ -44,7 +46,7 @@ async function updateIssueById(req, res) {
 async function deleteIssueById(req, res) {
     const { id } = req.params;
     try {
-        const issue = Issue.findByIdAndDelete(id);
+        const issue = await Issue.findByIdAndDelete(id);
         if (!issue) {
             return res.status(404).json({ error: "Issue not found!" });
         }
@@ -57,12 +59,13 @@ async function deleteIssueById(req, res) {
 
 
 async function getAllIssues(req, res) {
-    const { id } = req.params;
     try {
-        const issues = Issue.find({ repository: id });
-        if (!issues) {
-            return res.status(404).json({ error: "Issues not found!" });
+        const { repository } = req.query;
+        let query = {};
+        if (repository) {
+            query.repository = repository;
         }
+        const issues = await Issue.find(query);
         res.status(200).json(issues);
     } catch (err) {
         console.error("Error during issue fetching : ", err.message);

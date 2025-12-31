@@ -20,7 +20,7 @@ async function connectClient() {
 }
 
 async function signup(req, res) {
-    const { username, password, email } = req.body || {}; //tried to fix
+    const { username, password, email } = req.body; //tried to fix
     try {
         await connectClient();
         const db = client.db("Github");
@@ -41,11 +41,11 @@ async function signup(req, res) {
         };
         const result = await usersCollection.insertOne(newUser);
         const token = jwt.sign(
-            { id: result.insertId },
+            { id: result.insertedId },
             process.env.JWT_SECRET_KEY,
             { expiresIn: "120h" }
         );
-        res.json({ token, userId: result.insertId });
+        res.json({ token, userId: result.insertedId });
     } catch (err) {
         console.error("Error during signup : ", err.message);
         res.status(500).send("Server error");

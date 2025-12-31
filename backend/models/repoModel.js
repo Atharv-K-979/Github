@@ -1,51 +1,74 @@
+// const mongoose = require("mongoose");
+// const { Schema } = mongoose;
+
+// const RepositorySchema = new Schema(
+//     {
+//         name: {
+//             type: String,
+//             required: true,
+//             unique: true,
+//         },
+//         description: String,
+
+//         content: {
+//             type: [String],
+//             default: [],
+//         },
+
+//         visibility: {
+//             type: Boolean,
+//             default: true,
+//         },
+
+//         // error done here
+//         owner: {
+//             type: mongoose.Schema.Types.ObjectId,
+//             ref: "User",
+//             required: true,
+//         },
+//         issues: {
+//             type: [Schema.Types.ObjectId],
+//             ref: "Issue",
+//             default: [],
+//         },
+//     },
+//     { timestamps: true }
+// );
+
+// module.exports =
+//     mongoose.models.Repository ||
+//     mongoose.model("Repository", RepositorySchema);
+
+
+
 
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-// console.log("LOADING repo MODEL FILE");
-const UserSchema = new Schema(
+
+const RepositorySchema = new Schema(
     {
-        username: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        email: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        password: {
-            type: String,
+        name: { type: String, required: true, unique: true },
+        description: String,
+
+        content: { type: [String], default: [] },
+
+        visibility: { type: Boolean, default: true },
+
+        owner: {
+            type: Schema.Types.ObjectId,
+            ref: "User", // MUST MATCH MODEL NAME
             required: true,
         },
-        repos: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "Repository",
-            },
-        ],
-        starredRepos: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "Repository",
-            },
-        ],
-        followers: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
-        following: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
+
+        issues: {
+            type: [Schema.Types.ObjectId],
+            ref: "Issue",
+            default: [],
+        },
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
-// console.log("Closing repo MODEL FILE");
-module.exports = mongoose.model("User", UserSchema);
+
+module.exports =
+    mongoose.models.Repository ||
+    mongoose.model("Repository", RepositorySchema);

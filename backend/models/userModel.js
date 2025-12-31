@@ -42,6 +42,9 @@ const UserSchema = new Schema({
 });
 // console.log("closing user MODEL FILE")
 // const User = mongoose.model("User", UserSchema);
+// UserSchema.post("save", function () {
+//   console.log("USER SAVE TRIGGERED", this);
+// });
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 

@@ -2,32 +2,79 @@ const mongoose = require("mongoose");
 const Repository = require("../models/repoModel");
 const User = require("../models/userModel");
 const Issue = require("../models/issueModel");
+// console.log("CREATE REPOSITORY CONTROLLER HIT");
+
+// async function createRepository(req, res) {
+//     const { owner, name, issues, content, description, visibility } = req.body;
+//     try {
+//         if (!name) {
+//             return res.status(400).json({ error: "Repository name is required bro !!!" });
+//         }
+//         if (!mongoose.Types.ObjectId.isValid(owner)) {
+//             return res.status(400).json({ error: "Invalid User ID!" });
+//         }
+//         const newRepository = new Repository({
+//             name,
+//             description,
+//             visibility,
+//             owner,
+//             content,
+//             issues,
+//         });
+//         const result = await newRepository.save();
+//         res.status(201).json({
+//             message: "Repository created successfully !!!",
+//             repositoryID: result._id,
+//         });
+//     } catch (err) {
+//         console.error("Error during repository creation : ", err.message);
+//         res.status(500).send("Server error");
+//     }
+// }
+// // console.log("ended REPOSITORY CONTROLLER HIT");
+
+
 
 async function createRepository(req, res) {
-    const { owner, name, issues, content, description, visibility } = req.body;
+    const { owner, name, issues = [], content = [], description, visibility = true } = req.body;
+
     try {
         if (!name) {
-            return res.status(400).json({ error: "Repository name is required bro !!!" });
+            return res.status(400).json({ error: "Repository name is required" });
         }
+
         if (!mongoose.Types.ObjectId.isValid(owner)) {
-            return res.status(400).json({ error: "Invalid User ID!" });
+            return res.status(400).json({ error: "Invalid User ID" });
         }
-        const newRepository = new Repository({
+
+        // VERIFY OWNER EXISTS
+        const user = await User.findById(owner);
+        if (!user) {
+            return res.status(404).json({ error: "Owner not found" });
+        }
+
+        // CREATE REPO
+        const repository = await Repository.create({
             name,
             description,
             visibility,
-            owner,
+            // owner: user._id,
+            owner: new mongoose.Types.ObjectId(user._id), //FORCE ObjectId
             content,
             issues,
         });
-        const result = await newRepository.save();
+
+        // LINK REPO TO USER (GitHub-style)
+        user.repositories.push(repository._id);
+        await user.save();
+
         res.status(201).json({
-            message: "Repository created successfully !!!",
-            repositoryID: result._id,
+            message: "Repository created successfully",
+            repository,
         });
     } catch (err) {
-        console.error("Error during repository creation : ", err.message);
-        res.status(500).send("Server error");
+        console.error("Error during repository creation:", err);
+        res.status(500).json({ error: "Server error" });
     }
 }
 
