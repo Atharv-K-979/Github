@@ -7,8 +7,8 @@
 5. Pull (pull latest changes): node index.js pull
 6. revert (reverts file by commit id): node index.js revert <that commit id>
 
-## Frontend Components
-1. Authenyication signup and login
+## Frontend Components 
+1. Authentication signup and login
 2. dashboard - three column structure github recent graph (that green graph)
 3. repository 
 4. issues

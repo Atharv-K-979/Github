@@ -158,6 +158,112 @@ async function deleteUserProfile(req, res) {
         res.status(500).send("Server error!");
     }
 }
+
+async function starRepository(req, res) {
+    const { userId, repoId } = req.body;
+    try {
+        const mongoose = require("mongoose");
+        const User = require("../models/userModel");
+        
+        if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(repoId)) {
+            return res.status(400).json({ message: "Invalid user or repository ID" });
+        }
+        
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+        
+        // Check if already starred
+        const isStarred = user.starRepos && user.starRepos.some(
+            id => id.toString() === repoId.toString()
+        );
+        
+        if (isStarred) {
+            // Unstar: remove from starRepos
+            user.starRepos = user.starRepos.filter(
+                id => id.toString() !== repoId.toString()
+            );
+            await user.save();
+            res.json({ message: "Repository unstarred successfully", starred: false });
+        } else {
+            // Star: add to starRepos
+            user.starRepos.push(new mongoose.Types.ObjectId(repoId));
+            await user.save();
+            res.json({ message: "Repository starred successfully", starred: true });
+        }
+    } catch (err) {
+        console.error("Error during star/unstar repository : ", err.message);
+        res.status(500).send("Server error!");
+    }
+}
+
+async function getStarredRepositories(req, res) {
+    const userId = req.params.userId;
+    try {
+        const mongoose = require("mongoose");
+        const User = require("../models/userModel");
+        
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
+        
+        const user = await User.findById(userId).populate("starRepos");
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+        
+        // Return empty array if no starred repos (not an error)
+        res.json({ repositories: user.starRepos || [] });
+    } catch (err) {
+        console.error("Error during fetching starred repositories : ", err.message);
+        res.status(500).json({ message: "Server error!", error: err.message });
+    }
+}
+
+async function followUser(req, res) {
+    const { userId, targetUserId } = req.body;
+    try {
+        await connectClient();
+        const db = client.db("Github");
+        const usersCollection = db.collection("users");
+        
+        if (!ObjectId.isValid(userId) || !ObjectId.isValid(targetUserId)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
+        
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        const targetUser = await usersCollection.findOne({ _id: new ObjectId(targetUserId) });
+        
+        if (!user || !targetUser) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+        
+        // Check if already following
+        const isFollowing = user.followedUsers && user.followedUsers.some(
+            id => id.toString() === targetUserId.toString()
+        );
+        
+        if (isFollowing) {
+            // Unfollow: remove from followedUsers
+            await usersCollection.updateOne(
+                { _id: new ObjectId(userId) },
+                { $pull: { followedUsers: new ObjectId(targetUserId) } }
+            );
+            res.json({ message: "User unfollowed successfully", following: false });
+        } else {
+            // Follow: add to followedUsers
+            await usersCollection.updateOne(
+                { _id: new ObjectId(userId) },
+                { $addToSet: { followedUsers: new ObjectId(targetUserId) } }
+            );
+            res.json({ message: "User followed successfully", following: true });
+        }
+    } catch (err) {
+        console.error("Error during follow/unfollow user : ", err.message);
+        res.status(500).send("Server error!");
+    }
+}
 // console.log("REQ BODY:", req.body);
 
 module.exports = {
@@ -167,4 +273,7 @@ module.exports = {
     getUserProfile,
     updateUserProfile,
     deleteUserProfile,
+    starRepository,
+    getStarredRepositories,
+    followUser,
 };

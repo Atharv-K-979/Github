@@ -6,7 +6,6 @@ const bodyParser = require("body-parser");
 const http = require("http");
 const { Server } = require("socket.io");
 const mainRouter = require("./routes/main.router");
-const app = express();  //error go
 const yargs = require("yargs");
 const { hideBin } = require("yargs/helpers");
 
@@ -48,7 +47,19 @@ yargs(hideBin(process.argv))
             commitRepo(argv.message);
         }
     )
-    .command("push", "Push commits to S3", {}, pushRepo)
+    .command(
+        "push [repoId]",
+        "Push commits to S3 and optionally sync with MongoDB repository",
+        (yargs) => {
+            yargs.positional("repoId", {
+                describe: "MongoDB Repository ID to update with pushed files",
+                type: "string",
+            });
+        },
+        (argv) => {
+            pushRepo(argv.repoId);
+        }
+    )
     .command("pull", "Pull commits from S3", {}, pullRepo)
     .command(
         "revert <commitID>",
@@ -68,17 +79,33 @@ yargs(hideBin(process.argv))
 
 function startServer() {
     const app = express();
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 3002;
 // 
     app.use(bodyParser.json());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     const mongoURI = process.env.MONGODB_URI;
 
+    if (!mongoURI) {
+        console.error("MONGODB_URI is not defined in .env file");
+        return;
+    }
+
     mongoose
-        .connect(mongoURI)
+        .connect(mongoURI, {
+            serverSelectionTimeoutMS: 30000, // 30 seconds
+            socketTimeoutMS: 45000, // 45 seconds
+            connectTimeoutMS: 30000, // 30 seconds
+        })
         .then(() => console.log("MongoDB connected!"))
-        .catch((err) => console.error("Unable to connect : ", err));
+        .catch((err) => {
+            console.error("Unable to connect to MongoDB:", err.message);
+            console.error("\nTroubleshooting tips:");
+            console.error("1. Check your internet connection");
+            console.error("2. Verify your MONGODB_URI in .env file is correct");
+            console.error("3. Check MongoDB Atlas IP whitelist (allow 0.0.0.0/0 for testing)");
+            console.error("4. Verify DNS resolution is working");
+        });
     app.use(cors({ origin: "*" }));
     app.use("/", mainRouter);
     let user = "test";

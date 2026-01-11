@@ -1,0 +1,650 @@
+.create-repo-wrapper {
+  min-height: 100vh;
+  background-color: #0d1117;
+  color: white;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.create-repo-container {
+  max-width: 700px;
+  width: 100%;
+}
+
+.create-repo-header {
+  margin-bottom: 24px;
+}
+
+.create-repo-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #f0f6fc;
+}
+
+.create-repo-subtitle {
+  font-size: 16px;
+  color: #8b949e;
+  margin: 0;
+}
+
+.create-repo-form {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #f0f6fc;
+  font-size: 14px;
+}
+
+.required {
+  color: #f85149;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: #8b949e;
+  margin: 4px 0 0 0;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #f0f6fc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #1f6feb;
+  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.1);
+}
+
+.form-group input[type="text"].error {
+  border-color: #f85149;
+}
+
+.form-group input[type="text"].error:focus {
+  border-color: #f85149;
+  box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.radio-label:hover {
+  border-color: #8b949e;
+}
+
+.radio-label input[type="radio"] {
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"]:checked + .radio-content {
+  color: #f0f6fc;
+}
+
+.radio-label:has(input[type="radio"]:checked) {
+  border-color: #1f6feb;
+  background-color: rgba(31, 111, 235, 0.1);
+}
+
+.radio-content {
+  flex: 1;
+}
+
+.radio-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #f0f6fc;
+}
+
+.radio-description {
+  font-size: 12px;
+  color: #8b949e;
+  margin: 0;
+}
+
+.spinner-small {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #30363d;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background-color: #21262d;
+  color: #f0f6fc;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background-color: #30363d;
+  border-color: #8b949e;
+}
+
+.submit-btn {
+  background-color: #238636;
+  color: white;
+  border-color: #238636;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #2ea043;
+  border-color: #2ea043;
+}
+
+.cancel-btn:disabled,
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background-color: rgba(248, 81, 73, 0.1);
+  border: 1px solid #f85149;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.starred-repos-wrapper {
+  min-height: 100vh;
+  background-color: #0d1117;
+  color: white;
+  padding: 40px 20px;
+}
+
+.starred-repos-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #f0f6fc;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: #8b949e;
+  margin: 0;
+}
+
+.starred-repos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.loading-container,
+.error-container {
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.loading-spinner {
+  border: 3px solid #30363d;
+  border-top: 3px solid #58a6ff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-icon {
+  margin-bottom: 16px;
+}
+
+.error-container h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f0f6fc;
+  margin: 0 0 8px 0;
+}
+
+.error-container p {
+  color: #8b949e;
+  margin: 0 0 24px 0;
+}
+
+.retry-button {
+  padding: 8px 16px;
+  background-color: #21262d;
+  color: #f0f6fc;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retry-button:hover {
+  background-color: #30363d;
+  border-color: #8b949e;
+}
+
+.explore-button {
+  padding: 8px 16px;
+  background-color: #238636;
+  color: white;
+  border: 1px solid #238636;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.explore-button:hover {
+  background-color: #2ea043;
+  border-color: #2ea043;
+}
+
+.repo-card {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+
+.repo-card:hover {
+  border-color: #30363d;
+}
+
+.repo-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.repo-name {
+  color: #58a6ff;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.repo-name:hover {
+  text-decoration: underline;
+}
+
+.star-button {
+  background: none;
+  border: 1px solid #30363d;
+  color: #f0f6fc;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.star-button:hover {
+  background-color: #21262d;
+  border-color: #30363d;
+}
+
+.star-button.starred {
+  background-color: #1f6feb;
+  border-color: #1f6feb;
+}
+
+.repo-description {
+  color: #8b949e;
+  font-size: 14px;
+  margin-bottom: 12px;
+  min-height: 40px;
+}
+
+.repo-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #8b949e;
+}
+
+.empty-state h3 {
+  color: #f0f6fc;
+  margin-bottom: 8px;
+}
+
+/* Repository Detail Page Styles */
+.repo-detail-wrapper {
+  min-height: 100vh;
+  background-color: #0d1117;
+  color: white;
+  padding: 40px 20px;
+}
+
+.repo-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.repo-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.repo-detail-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.repo-detail-name {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
+  color: #f0f6fc;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.repo-owner {
+  color: #58a6ff;
+}
+
+.repo-separator {
+  color: #8b949e;
+}
+
+.repo-detail-description {
+  font-size: 16px;
+  color: #8b949e;
+  margin: 0 0 32px 0;
+}
+
+.repo-detail-content {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.repo-files-section,
+.repo-issues-section {
+  margin-bottom: 32px;
+}
+
+.repo-files-section:last-child,
+.repo-issues-section:last-child {
+  margin-bottom: 0;
+}
+
+.repo-files-section h2,
+.repo-issues-section h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f0f6fc;
+  margin: 0 0 16px 0;
+}
+
+.repo-files-list,
+.repo-issues-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.repo-file-item,
+.repo-issue-item {
+  padding: 12px;
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  color: #f0f6fc;
+  font-size: 14px;
+}
+
+.repo-file-item:last-child,
+.repo-issue-item:last-child {
+  margin-bottom: 0;
+}
+
+.repo-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #8b949e;
+}
+
+.repo-detail-footer {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background-color: #238636;
+  color: white;
+  border-color: #238636;
+}
+
+.btn-primary:hover {
+  background-color: #2ea043;
+  border-color: #2ea043;
+}
+
+.btn-secondary {
+  background-color: #21262d;
+  color: #f0f6fc;
+  border-color: #30363d;
+}
+
+.btn-secondary:hover {
+  background-color: #30363d;
+  border-color: #8b949e;
+}
+
+/* File Modal Styles */
+.file-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.file-modal-content {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.file-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #30363d;
+}
+
+.file-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f0f6fc;
+  margin: 0;
+}
+
+.file-modal-close {
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.file-modal-close:hover {
+  background-color: #21262d;
+  color: #f0f6fc;
+}
+
+.file-modal-body {
+  padding: 20px;
+  overflow: auto;
+  flex: 1;
+}
+
+.file-content {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 0;
+  color: #f0f6fc;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.repo-file-item.clickable {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.repo-file-item.clickable:hover {
+  background-color: #21262d;
+  border-color: #58a6ff;
+}

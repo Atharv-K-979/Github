@@ -15,7 +15,6 @@ node_modules/
 .env.*
 aws-config.js
 frontend/aws-config.js
-
 # =====================
 # Build / dist folders
 # =====================
