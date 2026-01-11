@@ -1,0 +1,29 @@
+# Dependency directories
+node_modules/
+dist/
+build/
+
+# Local Environment Secrets (CRITICAL)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Your Custom S3 Git-like Local Data
+.atharvGit/
+# (If you want to keep the config but not the local commit files)
+# .atharvGit/commits/ 
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Personal scripts
+run.bat
+run.sh
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
