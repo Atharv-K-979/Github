@@ -259,7 +259,7 @@
   font-size: 10px;
   color: #8b949e;
   margin-right: 8px;
-  height: 90px;
+  height: 140px;
 }
 
 .gh-heatmap-weekdays span:nth-child(2) {
@@ -275,7 +275,7 @@
 }
 
 .gh-heatmap-grid {
-  overflow-x: auto;
+  overflow-x: visible;
 }
 
 .gh-heatmap-legend {
@@ -294,9 +294,9 @@
 }
 
 .gh-heatmap-legend-square {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
 }
 
 @media (max-width: 768px) {

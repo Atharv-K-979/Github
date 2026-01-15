@@ -23,9 +23,6 @@ async function pushRepo(repoId) {
             const files = await fs.readdir(commitPath);
             
             for (const file of files) {
-                // Skip commit.json file
-                if (file === "commit.json") continue;
-                
                 const filePath = path.join(commitPath, file);
                 const fileContent = await fs.readFile(filePath);
                 const params = {
@@ -34,7 +31,9 @@ async function pushRepo(repoId) {
                     Body: fileContent,
                 };
                 await s3.upload(params).promise();
-                allFiles.add(file);
+                if (file !== "commit.json") {
+                    allFiles.add(file);
+                }
             }
         }
         

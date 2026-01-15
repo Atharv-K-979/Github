@@ -133,6 +133,13 @@ function startServer() {
         console.log("CRUD operations called");
         // CRUD operations
     });
+    httpServer.on("error", (err) => {
+        if (err && err.code === "EADDRINUSE") {
+            console.log(`Port ${port} is in use, assuming server already running on this port`);
+        } else {
+            console.error("Server error:", err && err.message ? err.message : err);
+        }
+    });
     httpServer.listen(port, () => {
         console.log(`Server is running on PORT ${port}`);
     });

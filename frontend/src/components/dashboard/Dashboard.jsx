@@ -11,6 +11,9 @@ const Dashboard = () => {
   const [activityItems, setActivityItems] = useState([]);
   const [activityLoading, setActivityLoading] = useState(false);
   const [activityError, setActivityError] = useState(null);
+  const [commitItems, setCommitItems] = useState([]);
+  const [commitLoading, setCommitLoading] = useState(false);
+  const [commitError, setCommitError] = useState(null);
   
   const {
     repositories,
@@ -112,6 +115,145 @@ const Dashboard = () => {
     };
     fetchActivity();
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const firstRepoId =
+      Array.isArray(repositories) && repositories.length > 0
+        ? repositories[0]._id
+        : null;
+    const normalize = (data) => {
+      const arr = Array.isArray(data) ? data : (data?.items || []);
+      return arr.slice(0, 5).map((item) => {
+        const user =
+          item.author?.username ||
+          item.username ||
+          item.user?.username ||
+          item.user ||
+          "User";
+        const files =
+          item.files ||
+          item.changedFiles ||
+          item.addedFiles ||
+          item.modifiedFiles ||
+          item.deletedFiles ||
+          [];
+        const message =
+          item.message ||
+          item.commitMessage ||
+          (Array.isArray(files) && files.length > 0
+            ? `Updated ${files.length} files`
+            : "Repository update");
+        const when =
+          item.timestamp ||
+          item.pushedAt ||
+          item.date ||
+          new Date().toISOString();
+        return {
+          user,
+          message,
+          files: Array.isArray(files) ? files : [files].filter(Boolean),
+          when,
+        };
+      });
+    };
+    const fetchCommits = async () => {
+      setCommitLoading(true);
+      setCommitError(null);
+      try {
+        if (firstRepoId) {
+          const resp = await axios.get(
+            `http://localhost:3002/repo/commits/${firstRepoId}`,
+            { headers }
+          );
+          const normalized = normalize(resp.data);
+          if (normalized.length > 0) {
+            setCommitItems(normalized);
+            return;
+          }
+        }
+        const resp2 = await axios.get(
+          `http://localhost:3002/activity/repoLogs/${firstRepoId || "all"}`,
+          { headers }
+        );
+        setCommitItems(normalize(resp2.data));
+      } catch (err) {
+        setCommitError("Failed to load recent commits");
+        setCommitItems([]);
+      } finally {
+        setCommitLoading(false);
+      }
+    };
+    fetchCommits();
+  }, [repositories]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const firstRepoId =
+      Array.isArray(repositories) && repositories.length > 0
+        ? repositories[0]._id
+        : null;
+    const normalize = (data) => {
+      const arr = Array.isArray(data) ? data : (data?.items || []);
+      return arr.slice(0, 5).map((item) => {
+        const user =
+          item.author?.username ||
+          item.username ||
+          item.user?.username ||
+          item.user ||
+          "User";
+        const files =
+          item.files ||
+          item.changedFiles ||
+          item.addedFiles ||
+          item.modifiedFiles ||
+          item.deletedFiles ||
+          [];
+        const message =
+          item.message ||
+          item.commitMessage ||
+          (Array.isArray(files) && files.length > 0
+            ? `Updated ${files.length} files`
+            : "Repository update");
+        const when =
+          item.timestamp ||
+          item.pushedAt ||
+          item.date ||
+          new Date().toISOString();
+        return {
+          user,
+          message,
+          files: Array.isArray(files) ? files : [files].filter(Boolean),
+          when,
+        };
+      });
+    };
+    const interval = setInterval(async () => {
+      try {
+        if (firstRepoId) {
+          const resp = await axios.get(
+            `http://localhost:3002/repo/commits/${firstRepoId}`,
+            { headers }
+          );
+          const normalized = normalize(resp.data);
+          if (normalized.length > 0) {
+            setCommitItems(normalized);
+            return;
+          }
+        }
+        const resp2 = await axios.get(
+          `http://localhost:3002/activity/repoLogs/${firstRepoId || "all"}`,
+          { headers }
+        );
+        setCommitItems(normalize(resp2.data));
+      } catch {
+        void 0;
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [repositories]);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -304,6 +446,31 @@ const Dashboard = () => {
                       <p className="activity-text">Action: {a.summary}</p>
                       <p className="activity-text">Files: {a.files.join(", ")}</p>
                       <p className="activity-text">When: {new Date(a.when).toLocaleString()}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="sidebar-section">
+              <h3 className="sidebar-title">Recent commits</h3>
+              {commitLoading ? (
+                <div className="loading-state">Loading commits...</div>
+              ) : commitError ? (
+                <div className="error-state">{commitError}</div>
+              ) : commitItems.length === 0 ? (
+                <div className="activity-list">
+                  <div className="activity-item">
+                    <p className="activity-text">No commits yet</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="activity-list">
+                  {commitItems.map((c, i) => (
+                    <div key={i} className="activity-item">
+                      <p className="activity-text">User: {c.user}</p>
+                      <p className="activity-text">Commit: {c.message}</p>
+                      <p className="activity-text">Files: {c.files.join(", ")}</p>
+                      <p className="activity-text">When: {new Date(c.when).toLocaleString()}</p>
                     </div>
                   ))}
                 </div>

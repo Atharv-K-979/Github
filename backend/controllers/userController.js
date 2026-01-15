@@ -204,6 +204,85 @@ async function getUserActivity(req, res) {
     }
 }
 
+async function getPushLogs(req, res) {
+    const currentID = req.params.id;
+    try {
+        await connectClient();
+        const db = client.db("Github");
+        const usersCollection = db.collection("users");
+        const user = await usersCollection.findOne({
+            _id: new ObjectId(currentID),
+        });
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+        const username = user.username || "User";
+        const pushActivity = Array.isArray(user.pushActivity) ? user.pushActivity : [];
+        let items = [];
+        try {
+            const { s3, S3_BUCKET } = require("../config/aws-config");
+            const data = await s3
+                .listObjectsV2({
+                    Bucket: S3_BUCKET,
+                    Prefix: "commits/",
+                })
+                .promise();
+            const map = new Map();
+            for (const obj of (data.Contents || [])) {
+                const parts = (obj.Key || "").split("/");
+                if (parts.length < 3) continue;
+                const commitId = parts[1];
+                const filename = parts[2];
+                if (!map.has(commitId)) {
+                    map.set(commitId, { files: [], lastModified: obj.LastModified });
+                }
+                const entry = map.get(commitId);
+                entry.files.push(filename);
+                if (new Date(obj.LastModified) > new Date(entry.lastModified)) {
+                    entry.lastModified = obj.LastModified;
+                }
+            }
+            const entries = Array.from(map.entries());
+            items = await Promise.all(entries.map(async ([cid, v]) => {
+                let message = `Updated ${v.files.length} file(s)`;
+                let when = v.lastModified;
+                try {
+                    const obj = await s3.getObject({
+                        Bucket: S3_BUCKET,
+                        Key: `commits/${cid}/commit.json`,
+                    }).promise();
+                    const parsed = JSON.parse(obj.Body.toString("utf-8"));
+                    message = parsed.message || message;
+                    when = parsed.date || when;
+                } catch (e) {
+                    // ignore if commit.json missing
+                }
+                return {
+                    userId: currentID,
+                    author: { username },
+                    files: v.files,
+                    timestamp: when,
+                    message,
+                };
+            }));
+            items = items.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        } catch (e) {
+            items = pushActivity
+                .map((d) => ({
+                    userId: currentID,
+                    author: { username },
+                    files: [],
+                    timestamp: d,
+                }))
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        }
+        res.json(items);
+    } catch (err) {
+        console.error("Error during fetching push logs : ", err.message);
+        res.status(500).send("Server error!");
+    }
+}
+
 async function starRepository(req, res) {
     const { userId, repoId } = req.body;
     try {
@@ -351,5 +430,6 @@ module.exports = {
     starRepository,
     getStarredRepositories,
     getUserActivity,
+    getPushLogs,
     followUser,
 };

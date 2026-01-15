@@ -8,6 +8,7 @@ userRouter.post("/signup", userController.signup);
 userRouter.post("/login", userController.login);
 userRouter.get("/userProfile/:id", userController.getUserProfile);
 userRouter.get("/userActivity/:id", userController.getUserActivity);
+userRouter.get("/activity/pushLogs/:id", userController.getPushLogs);
 userRouter.put("/updateProfile/:id", userController.updateUserProfile);
 userRouter.delete("/deleteProfile/:id", userController.deleteUserProfile);
 userRouter.post("/star", userController.starRepository);

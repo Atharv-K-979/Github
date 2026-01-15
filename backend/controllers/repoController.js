@@ -298,6 +298,95 @@ async function getFileContent(req, res) {
     }
 }
 
+async function getRepoCommits(req, res) {
+    try {
+        const { s3, S3_BUCKET } = require("../config/aws-config");
+        const data = await s3
+            .listObjectsV2({
+                Bucket: S3_BUCKET,
+                Prefix: "commits/",
+            })
+            .promise();
+        const map = new Map();
+        for (const obj of (data.Contents || [])) {
+            const parts = (obj.Key || "").split("/");
+            if (parts.length < 3) continue;
+            const commitId = parts[1];
+            const filename = parts[2];
+            if (!map.has(commitId)) {
+                map.set(commitId, { files: [], lastModified: obj.LastModified });
+            }
+            const entry = map.get(commitId);
+            entry.files.push(filename);
+            if (new Date(obj.LastModified) > new Date(entry.lastModified)) {
+                entry.lastModified = obj.LastModified;
+            }
+        }
+        const entries = Array.from(map.entries());
+        const items = await Promise.all(entries.map(async ([cid, v]) => {
+            let message = `Updated ${v.files.length} file(s)`;
+            let when = v.lastModified;
+            try {
+                const obj = await s3.getObject({
+                    Bucket: S3_BUCKET,
+                    Key: `commits/${cid}/commit.json`,
+                }).promise();
+                const parsed = JSON.parse(obj.Body.toString("utf-8"));
+                message = parsed.message || message;
+                when = parsed.date || when;
+            } catch (e) {
+                // ignore if commit.json missing
+            }
+            return {
+                files: v.files,
+                message,
+                date: when,
+            };
+        }));
+        const sorted = items.sort((a, b) => new Date(b.date) - new Date(a.date));
+        res.json(sorted);
+    } catch (err) {
+        console.error("Error fetching repo commits:", err.message);
+        try {
+            const fs = require("fs").promises;
+            const path = require("path");
+            const repoPath = path.resolve(process.cwd(), ".atharvGit");
+            const commitsPath = path.join(repoPath, "commits");
+            const commitDirs = await fs.readdir(commitsPath);
+            const items = [];
+            for (const cid of commitDirs) {
+                const dir = path.join(commitsPath, cid);
+                const files = await fs.readdir(dir);
+                const filtered = files.filter(f => f !== "commit.json");
+                let message = `Updated ${filtered.length} file(s)`;
+                let when = undefined;
+                try {
+                    const jsonBuf = await fs.readFile(path.join(dir, "commit.json"));
+                    const parsed = JSON.parse(jsonBuf.toString("utf-8"));
+                    message = parsed.message || message;
+                    when = parsed.date;
+                } catch {
+                    // ignore missing commit.json
+                }
+                items.push({
+                    files: filtered,
+                    message,
+                    date: when || new Date().toISOString(),
+                });
+            }
+            const sorted = items.sort((a, b) => new Date(b.date) - new Date(a.date));
+            res.json(sorted);
+        } catch (fallbackErr) {
+            console.error("Local fallback failed:", fallbackErr.message);
+            res.json([]);
+        }
+    }
+}
+
+async function getRepoLogs(req, res) {
+    return getRepoCommits(req, res);
+}
+
 module.exports = {
     createRepository,
     getAllRepositories,
@@ -308,4 +397,6 @@ module.exports = {
     toggleVisibilityById,
     deleteRepositoryById,
     getFileContent,
+    getRepoCommits,
+    getRepoLogs,
 };
