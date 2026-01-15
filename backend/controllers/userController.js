@@ -159,38 +159,93 @@ async function deleteUserProfile(req, res) {
     }
 }
 
+async function getUserActivity(req, res) {
+    const currentID = req.params.id;
+    try {
+        await connectClient();
+        const db = client.db("Github");
+        const usersCollection = db.collection("users");
+        const pipeline = [
+            {
+                $match: {
+                    _id: new ObjectId(currentID),
+                },
+            },
+            {
+                $unwind: "$pushActivity",
+            },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$pushActivity",
+                        },
+                    },
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date: "$_id",
+                    count: 1,
+                },
+            },
+            {
+                $sort: { date: 1 },
+            },
+        ];
+        const activity = await usersCollection.aggregate(pipeline).toArray();
+        res.json(activity);
+    } catch (err) {
+        console.error("Error during fetching activity : ", err.message);
+        res.status(500).send("Server error!");
+    }
+}
+
 async function starRepository(req, res) {
     const { userId, repoId } = req.body;
     try {
-        const mongoose = require("mongoose");
-        const User = require("../models/userModel");
-        
-        if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(repoId)) {
+        await connectClient();
+        const db = client.db("Github");
+        const usersCollection = db.collection("users");
+
+        if (!ObjectId.isValid(userId) || !ObjectId.isValid(repoId)) {
             return res.status(400).json({ message: "Invalid user or repository ID" });
         }
-        
-        const user = await User.findById(userId);
+
+        const userObjectId = new ObjectId(userId);
+        const repoObjectId = new ObjectId(repoId);
+
+        const user = await usersCollection.findOne({ _id: userObjectId });
         if (!user) {
             return res.status(404).json({ message: "User not found!" });
         }
-        
-        // Check if already starred
-        const isStarred = user.starRepos && user.starRepos.some(
-            id => id.toString() === repoId.toString()
+
+        const starRepos = user.starRepos || [];
+        const isStarred = starRepos.some(
+            (id) => id.toString() === repoObjectId.toString()
         );
-        
+
         if (isStarred) {
-            // Unstar: remove from starRepos
-            user.starRepos = user.starRepos.filter(
-                id => id.toString() !== repoId.toString()
+            await usersCollection.updateOne(
+                { _id: userObjectId },
+                { $pull: { starRepos: repoObjectId } }
             );
-            await user.save();
-            res.json({ message: "Repository unstarred successfully", starred: false });
+            return res.json({
+                message: "Repository unstarred successfully",
+                starred: false,
+            });
         } else {
-            // Star: add to starRepos
-            user.starRepos.push(new mongoose.Types.ObjectId(repoId));
-            await user.save();
-            res.json({ message: "Repository starred successfully", starred: true });
+            await usersCollection.updateOne(
+                { _id: userObjectId },
+                { $addToSet: { starRepos: repoObjectId } }
+            );
+            return res.json({
+                message: "Repository starred successfully",
+                starred: true,
+            });
         }
     } catch (err) {
         console.error("Error during star/unstar repository : ", err.message);
@@ -201,20 +256,40 @@ async function starRepository(req, res) {
 async function getStarredRepositories(req, res) {
     const userId = req.params.userId;
     try {
-        const mongoose = require("mongoose");
-        const User = require("../models/userModel");
-        
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
+        await connectClient();
+        const db = client.db("Github");
+        const usersCollection = db.collection("users");
+        const reposCollection = db.collection("repositories");
+
+        if (!ObjectId.isValid(userId)) {
             return res.status(400).json({ message: "Invalid user ID" });
         }
-        
-        const user = await User.findById(userId).populate("starRepos");
+
+        const userObjectId = new ObjectId(userId);
+        const user = await usersCollection.findOne({ _id: userObjectId });
+
         if (!user) {
             return res.status(404).json({ message: "User not found!" });
         }
-        
-        // Return empty array if no starred repos (not an error)
-        res.json({ repositories: user.starRepos || [] });
+
+        const starRepos = user.starRepos || [];
+        if (!Array.isArray(starRepos) || starRepos.length === 0) {
+            return res.json({ repositories: [] });
+        }
+
+        const repoIds = starRepos
+            .filter((id) => ObjectId.isValid(id))
+            .map((id) => new ObjectId(id));
+
+        if (repoIds.length === 0) {
+            return res.json({ repositories: [] });
+        }
+
+        const repositories = await reposCollection
+            .find({ _id: { $in: repoIds } })
+            .toArray();
+
+        res.json({ repositories: repositories || [] });
     } catch (err) {
         console.error("Error during fetching starred repositories : ", err.message);
         res.status(500).json({ message: "Server error!", error: err.message });
@@ -275,5 +350,6 @@ module.exports = {
     deleteUserProfile,
     starRepository,
     getStarredRepositories,
+    getUserActivity,
     followUser,
 };

@@ -3,6 +3,7 @@ const path = require("path");
 const { s3, S3_BUCKET } = require("../config/aws-config");
 const mongoose = require("mongoose");
 const Repository = require("../models/repoModel");
+const User = require("../models/userModel");
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -55,37 +56,44 @@ async function pushRepo(repoId) {
                 
                 // Validate repoId
                 if (!mongoose.Types.ObjectId.isValid(repoId)) {
-                    console.error("❌ Invalid repository ID format");
+                    console.error("Invalid repository ID format");
                     if (needsToCloseConnection) await mongoose.connection.close();
                     return;
                 }
                 
-                // Find and update the repository
                 const repository = await Repository.findById(repoId);
                 if (!repository) {
-                    console.error(`❌ Repository with ID ${repoId} not found`);
+                    console.error(`Repository with ID ${repoId} not found`);
                     if (needsToCloseConnection) await mongoose.connection.close();
                     return;
                 }
                 
-                // Update content array with all unique filenames
-                // Merge with existing content to avoid duplicates
                 const existingContent = new Set(repository.content || []);
                 allFiles.forEach(file => existingContent.add(file));
                 repository.content = Array.from(existingContent);
                 
                 await repository.save();
-                console.log(`✅ Repository "${repository.name}" updated with ${allFiles.size} file(s)`);
+                console.log(`Repository "${repository.name}" updated with ${allFiles.size} file(s)`);
                 console.log(`   Files: ${Array.from(allFiles).join(", ")}`);
+                
+                if (repository.owner) {
+                    try {
+                        await User.findByIdAndUpdate(repository.owner, {
+                            $push: { pushActivity: new Date() },
+                        });
+                    } catch (activityErr) {
+                        console.error("Error recording push activity:", activityErr.message);
+                    }
+                }
                 
                 // Close connection if we opened it
                 if (needsToCloseConnection) {
                     await mongoose.connection.close();
                 }
             } catch (mongoErr) {
-                console.error("❌ Error updating MongoDB repository:", mongoErr.message);
+                console.error("Error updating MongoDB repository:", mongoErr.message);
                 if (mongoErr.message.includes("timed out") || mongoErr.message.includes("ETIMEOUT")) {
-                    console.error("\n💡 Troubleshooting tips:");
+                    console.error("\n OP Troubleshooting tips:");
                     console.error("   1. Check your internet connection");
                     console.error("   2. Verify MONGODB_URI in .env file is correct");
                     console.error("   3. Check MongoDB Atlas IP whitelist (allow 0.0.0.0/0 for testing)");
@@ -106,7 +114,7 @@ async function pushRepo(repoId) {
         
         // Provide helpful error messages for common issues
         if (err.code === "SignatureDoesNotMatch") {
-            console.error("\n❌ SignatureDoesNotMatch Error:");
+            console.error("\nSignatureDoesNotMatch Error:");
             console.error("   This usually means your AWS credentials are incorrect.");
             console.error("   Please check:");
             console.error("   1. AWS_ACCESS_KEY_ID in .env file is correct");
@@ -115,10 +123,10 @@ async function pushRepo(repoId) {
             console.error("   4. Credentials match the IAM user in AWS Console");
             console.error("   5. The IAM user has S3 permissions for bucket:", S3_BUCKET);
         } else if (err.code === "InvalidAccessKeyId") {
-            console.error("\n❌ InvalidAccessKeyId Error:");
+            console.error("\nInvalidAccessKeyId Error:");
             console.error("   Your AWS_ACCESS_KEY_ID is invalid or doesn't exist.");
         } else if (err.code === "AccessDenied") {
-            console.error("\n❌ AccessDenied Error:");
+            console.error("\nAccessDenied Error:");
             console.error("   Your IAM user doesn't have permission to access this S3 bucket.");
         }
         

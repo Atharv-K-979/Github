@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Navbar from "../Navbar";
 import RepositoryCard from "../common/RepositoryCard";
 import { useApp } from "../../contexts/AppContext";
@@ -7,6 +8,9 @@ import "./dashboard.css";
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [activityItems, setActivityItems] = useState([]);
+  const [activityLoading, setActivityLoading] = useState(false);
+  const [activityError, setActivityError] = useState(null);
   
   const {
     repositories,
@@ -39,6 +43,140 @@ const Dashboard = () => {
       setSearchResults(filtered);
     }
   }, [searchQuery, repositories]);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    if (!userId) return;
+    const fetchActivity = async () => {
+      setActivityLoading(true);
+      setActivityError(null);
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const normalizeItems = (data) => {
+        const arr = Array.isArray(data) ? data : (data?.items || []);
+        const own = arr.filter((item) => {
+          const uid = userId?.toString();
+          const a =
+            item.userId?.toString?.() ||
+            item.authorId?.toString?.() ||
+            item.actorId?.toString?.() ||
+            item.user?.id?.toString?.();
+          return uid && a && a === uid;
+        });
+        return own.slice(0, 3).map((item) => {
+          const user =
+            item.author?.username ||
+            item.username ||
+            item.user?.username ||
+            item.user ||
+            "User";
+          const added = item.addedFiles || [];
+          const modified = item.modifiedFiles || [];
+          const deleted = item.deletedFiles || [];
+          const files =
+            item.files ||
+            item.changedFiles ||
+            [...added, ...modified, ...deleted];
+          const when = item.timestamp || item.pushedAt || item.date || new Date().toISOString();
+          return {
+            user,
+            summary: `Added ${added.length}, Modified ${modified.length}, Deleted ${deleted.length}`,
+            files: Array.isArray(files) ? files : [files].filter(Boolean),
+            when,
+          };
+        });
+      };
+      try {
+        const resp = await axios.get(`http://localhost:3002/activity/pushLogs/${userId}`, { headers });
+        const normalized = normalizeItems(resp.data);
+        if (normalized.length > 0) {
+          setActivityItems(normalized);
+        } else {
+          try {
+            const backup = await axios.get(`http://localhost:3002/userActivity/${userId}`, { headers });
+            setActivityItems(normalizeItems(backup.data));
+          } catch {
+            setActivityItems([]);
+          }
+        }
+      } catch {
+        try {
+          const backup = await axios.get(`http://localhost:3002/userActivity/${userId}`, { headers });
+          setActivityItems(normalizeItems(backup.data));
+        } catch {
+          setActivityItems([]);
+        }
+      } finally {
+        setActivityLoading(false);
+      }
+    };
+    fetchActivity();
+  }, []);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    if (!userId) return;
+    const interval = setInterval(async () => {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const normalizeItems = (data) => {
+        const arr = Array.isArray(data) ? data : (data?.items || []);
+        const own = arr.filter((item) => {
+          const uid = userId?.toString();
+          const a =
+            item.userId?.toString?.() ||
+            item.authorId?.toString?.() ||
+            item.actorId?.toString?.() ||
+            item.user?.id?.toString?.();
+          return uid && a && a === uid;
+        });
+        return own.slice(0, 3).map((item) => {
+          const user =
+            item.author?.username ||
+            item.username ||
+            item.user?.username ||
+            item.user ||
+            "User";
+          const added = item.addedFiles || [];
+          const modified = item.modifiedFiles || [];
+          const deleted = item.deletedFiles || [];
+          const files =
+            item.files ||
+            item.changedFiles ||
+            [...added, ...modified, ...deleted];
+          const when = item.timestamp || item.pushedAt || item.date || new Date().toISOString();
+          return {
+            user,
+            summary: `Added ${added.length}, Modified ${modified.length}, Deleted ${deleted.length}`,
+            files: Array.isArray(files) ? files : [files].filter(Boolean),
+            when,
+          };
+        });
+      };
+      try {
+        const resp = await axios.get(`http://localhost:3002/activity/pushLogs/${userId}`, { headers });
+        const normalized = normalizeItems(resp.data);
+        if (normalized.length > 0) {
+          setActivityItems(normalized);
+        } else {
+          try {
+            const backup = await axios.get(`http://localhost:3002/userActivity/${userId}`, { headers });
+            setActivityItems(normalizeItems(backup.data));
+          } catch {
+            void 0;
+          }
+        }
+      } catch {
+        try {
+          const backup = await axios.get(`http://localhost:3002/userActivity/${userId}`, { headers });
+          setActivityItems(normalizeItems(backup.data));
+        } catch {
+          void 0;
+        }
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -109,7 +247,7 @@ const Dashboard = () => {
                   <RepositoryCard
                     key={repo._id}
                     repo={repo}
-                    showStarButton={false}
+                showStarButton={true}
                   />
                 ))}
               </div>
@@ -148,11 +286,28 @@ const Dashboard = () => {
           <aside className="dashboard-sidebar-right">
             <div className="sidebar-section">
               <h3 className="sidebar-title">Recent activity</h3>
-              <div className="activity-list">
-                <div className="activity-item">
-                  <p className="activity-text">No recent activity</p>
+              {activityLoading ? (
+                <div className="loading-state">Loading activity...</div>
+              ) : activityError ? (
+                <div className="error-state">{activityError}</div>
+              ) : activityItems.length === 0 ? (
+                <div className="activity-list">
+                  <div className="activity-item">
+                    <p className="activity-text">No recent activity</p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="activity-list">
+                  {activityItems.map((a, idx) => (
+                    <div key={idx} className="activity-item">
+                      <p className="activity-text">User: {a.user}</p>
+                      <p className="activity-text">Action: {a.summary}</p>
+                      <p className="activity-text">Files: {a.files.join(", ")}</p>
+                      <p className="activity-text">When: {new Date(a.when).toLocaleString()}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </aside>
         </div>

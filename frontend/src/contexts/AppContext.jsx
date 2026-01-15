@@ -124,7 +124,8 @@ export const AppProvider = ({ children }) => {
   const toggleStar = useCallback(async (repoId) => {
     if (!userId || !token) return;
     
-    const isStarred = starredRepoIds.has(repoId);
+    const idString = repoId?.toString();
+    const isStarred = starredRepoIds.has(idString);
     
     try {
       await axios.post(
@@ -133,18 +134,26 @@ export const AppProvider = ({ children }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      // Update local state immediately
       const newStarredIds = new Set(starredRepoIds);
       if (isStarred) {
-        newStarredIds.delete(repoId);
-        setStarredRepos(prev => prev.filter(repo => repo._id !== repoId));
+        newStarredIds.delete(idString);
+        setStarredRepos(prev =>
+          prev.filter(repo => (repo._id?.toString() || repo._id) !== idString)
+        );
       } else {
-        newStarredIds.add(repoId);
-        // Find and add the repo to starred list
-        const repo = suggestedRepos.find(r => r._id === repoId) || 
-                    repositories.find(r => r._id === repoId);
+        newStarredIds.add(idString);
+        const repo =
+          suggestedRepos.find(r => (r._id?.toString() || r._id) === idString) ||
+          repositories.find(r => (r._id?.toString() || r._id) === idString);
         if (repo) {
-          setStarredRepos(prev => [...prev, repo]);
+          setStarredRepos(prev => {
+            const exists = prev.some(
+              r => (r._id?.toString() || r._id) === idString
+            );
+            return exists ? prev : [...prev, repo];
+          });
+        } else {
+          fetchStarredRepos();
         }
       }
       setStarredRepoIds(newStarredIds);
@@ -152,7 +161,7 @@ export const AppProvider = ({ children }) => {
       console.error('Error toggling star:', err);
       throw err;
     }
-  }, [userId, token, starredRepoIds, suggestedRepos, repositories]);
+  }, [userId, token, starredRepoIds, suggestedRepos, repositories, fetchStarredRepos]);
 
   // Toggle follow user
   const toggleFollow = useCallback(async (targetUserId) => {

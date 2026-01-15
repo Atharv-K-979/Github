@@ -16,6 +16,7 @@ const Profile = () => {
   const { toggleFollow, following, followers, fetchUserProfile } = useApp();
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activityData, setActivityData] = useState([]);
 
   const userId = localStorage.getItem("userId");
   const currentProfileUserId = userId; // For now, viewing own profile
@@ -31,6 +32,19 @@ const Profile = () => {
           setUserDetails(response.data);
           await fetchUserProfile(userId);
           setIsFollowing(following.has(userId));
+          try {
+            const activityResponse = await axios.get(
+              `http://localhost:3002/userActivity/${userId}`
+            );
+            if (Array.isArray(activityResponse.data)) {
+              setActivityData(activityResponse.data);
+            } else {
+              setActivityData([]);
+            }
+          } catch (activityErr) {
+            console.error("Cannot fetch user activity: ", activityErr);
+            setActivityData([]);
+          }
         } catch (err) {
           console.error("Cannot fetch user details: ", err);
         } finally {
@@ -154,7 +168,7 @@ const Profile = () => {
             <div className="profile-content-area">
               <div className="contribution-graph">
                 <h2 className="section-title">Contributions</h2>
-                <HeatMapProfile />
+                <HeatMapProfile data={activityData} />
               </div>
             </div>
           </main>
