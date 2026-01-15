@@ -34,13 +34,12 @@ const Profile = () => {
           setIsFollowing(following.has(userId));
           try {
             const activityResponse = await axios.get(
-              `http://localhost:3002/userActivity/${userId}`
+              `http://localhost:3002/api/contributions/${userId}`
             );
-            if (Array.isArray(activityResponse.data)) {
-              setActivityData(activityResponse.data);
-            } else {
-              setActivityData([]);
-            }
+            const arr = Array.isArray(activityResponse.data)
+              ? activityResponse.data
+              : (activityResponse.data?.items || []);
+            setActivityData(arr);
           } catch (activityErr) {
             console.error("Cannot fetch user activity: ", activityErr);
             setActivityData([]);
@@ -55,6 +54,20 @@ const Profile = () => {
     fetchUserDetails();
   }, [userId, fetchUserProfile, following]);
 
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+    const interval = setInterval(async () => {
+      try {
+        const resp = await axios.get(`http://localhost:3002/api/contributions/${userId}`);
+        const arr = Array.isArray(resp.data) ? resp.data : (resp.data?.items || []);
+        setActivityData(arr);
+      } catch {
+        // ignore
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
   const handleFollow = async () => {
     if (currentProfileUserId) {
       try {

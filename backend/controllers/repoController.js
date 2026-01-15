@@ -251,6 +251,8 @@ async function getFileContent(req, res) {
     const { id, filename } = req.params;
     try {
         const { s3, S3_BUCKET } = require("../config/aws-config");
+        const path = require("path");
+        const fs = require("fs").promises;
         
         // List all objects in S3 with the filename
         // Files are stored as commits/{commitId}/{filename}
@@ -271,12 +273,13 @@ async function getFileContent(req, res) {
             return res.status(404).json({ error: "File not found" });
         }
         
-        // Get the latest version (by LastModified date)
-        const latestObject = matchingObjects.reduce((latest, current) => {
-            return new Date(current.LastModified) > new Date(latest.LastModified) 
-                ? current 
-                : latest;
-        });
+        // Prefer the latest non-empty object (by Size), otherwise fall back to latest by LastModified
+        const nonEmpty = matchingObjects.filter((o) => (o.Size || 0) > 0);
+        const pickLatestByDate = (arr) =>
+            arr.reduce((latest, current) =>
+                new Date(current.LastModified) > new Date(latest.LastModified) ? current : latest
+            );
+        const latestObject = (nonEmpty.length > 0 ? pickLatestByDate(nonEmpty) : pickLatestByDate(matchingObjects));
         
         // Fetch the file content
         const fileData = await s3.getObject({
@@ -285,12 +288,36 @@ async function getFileContent(req, res) {
         }).promise();
         
         // Convert buffer to string
-        const content = fileData.Body.toString('utf-8');
+        let content = "";
+        if (fileData && fileData.Body) {
+            try {
+                content = fileData.Body.toString("utf-8");
+            } catch {
+                content = "";
+            }
+        }
+        // Fallback: if content is empty, try to read from local commit folder
+        if (!content || content.length === 0) {
+            try {
+                const parts = (latestObject.Key || "").split("/");
+                const commitId = parts.length >= 3 ? parts[1] : undefined;
+                if (commitId) {
+                    const localPath = path.resolve(process.cwd(), ".atharvGit", "commits", commitId, filename);
+                    const localData = await fs.readFile(localPath, "utf-8");
+                    if (typeof localData === "string" && localData.length > 0) {
+                        content = localData;
+                    }
+                }
+            } catch {
+                // ignore local fallback errors
+            }
+        }
         
         res.json({
             filename: filename,
             content: content,
             lastModified: latestObject.LastModified,
+            size: latestObject.Size,
         });
     } catch (err) {
         console.error("Error fetching file content:", err.message);

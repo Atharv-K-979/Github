@@ -164,10 +164,14 @@
   border: 1px solid #30363d;
   border-radius: 6px;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .contribution-graph {
   margin-bottom: 24px;
+  width: 100%;
 }
 
 .section-title {
@@ -222,10 +226,10 @@
 }
 
 .gh-heatmap-container {
-  background-color: #0d1117;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  padding: 16px 16px 8px 16px;
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  padding: 0 0 8px 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 }
 
@@ -249,7 +253,7 @@
 
 .gh-heatmap-body {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .gh-heatmap-weekdays {
@@ -259,7 +263,6 @@
   font-size: 10px;
   color: #8b949e;
   margin-right: 8px;
-  height: 140px;
 }
 
 .gh-heatmap-weekdays span:nth-child(2) {
@@ -275,7 +278,8 @@
 }
 
 .gh-heatmap-grid {
-  overflow-x: visible;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .gh-heatmap-legend {

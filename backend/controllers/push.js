@@ -80,6 +80,15 @@ async function pushRepo(repoId) {
                         await User.findByIdAndUpdate(repository.owner, {
                             $push: { pushActivity: new Date() },
                         });
+                        try {
+                            const Activity = require("../models/activityModel");
+                            await Activity.create({
+                                userId: repository.owner,
+                                timestamp: new Date(),
+                            });
+                        } catch (actErr) {
+                            console.error("Error creating Activity record:", actErr.message);
+                        }
                     } catch (activityErr) {
                         console.error("Error recording push activity:", activityErr.message);
                     }

@@ -33,7 +33,7 @@ const Navbar = () => {
       <nav className="app-nav">
         <button className="nav-logo" onClick={handleLogoClick}>
           <div className="nav-logo-mark">
-            <img src={logo} alt="GitHub" style={{ width: 30, height: 30 }} />
+            <img src={logo} alt="GitHub" style={{ width: 20, height: 20 }} />
           </div>
           <span className="nav-logo-text">GitHub</span>
         </button>
