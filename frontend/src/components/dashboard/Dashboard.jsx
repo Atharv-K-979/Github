@@ -442,10 +442,10 @@ const Dashboard = () => {
                 <div className="activity-list">
                   {activityItems.map((a, idx) => (
                     <div key={idx} className="activity-item">
-                      <p className="activity-text">User: {a.user}</p>
-                      <p className="activity-text">Action: {a.summary}</p>
-                      <p className="activity-text">Files: {a.files.join(", ")}</p>
-                      <p className="activity-text">When: {new Date(a.when).toLocaleString()}</p>
+                      <p className="activity-text"><span>User : </span> {a.user}</p>
+                      <p className="activity-text"><span>Action : </span>{a.summary}</p>
+                      <p className="activity-text"><span>Files : </span>{a.files.join(", ")}</p>
+                      <p className="activity-text"><span>When : </span>{new Date(a.when).toLocaleString()}</p>
                     </div>
                   ))}
                 </div>
@@ -467,10 +467,10 @@ const Dashboard = () => {
                 <div className="activity-list">
                   {commitItems.map((c, i) => (
                     <div key={i} className="activity-item">
-                      <p className="activity-text">User: {c.user}</p>
-                      <p className="activity-text">Commit: {c.message}</p>
-                      <p className="activity-text">Files: {c.files.join(", ")}</p>
-                      <p className="activity-text">When: {new Date(c.when).toLocaleString()}</p>
+                      <p className="activity-text"><span>User : </span> {c.user}</p>
+                      <p className="activity-text"><span>Commit : </span>{c.message}</p>
+                      <p className="activity-text"><span>Files : </span>{c.files.join(", ")}</p>
+                      <p className="activity-text"><span>When : </span>{new Date(c.when).toLocaleString()}</p>
                     </div>
                   ))}
                 </div>

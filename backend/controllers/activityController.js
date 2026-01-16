@@ -18,7 +18,23 @@ async function getContributions(req, res) {
           count: { $sum: 1 },
         },
       },
-      { $project: { _id: 0, date: "$_id", count: 1 } },
+      {
+        $project: {
+          _id: 0,
+          date: "$_id",
+          count: {
+            $switch: {
+              branches: [
+                { case: { $gt: ["$count", 10] }, then: 4 },
+                { case: { $gte: ["$count", 6] }, then: 3 },
+                { case: { $gte: ["$count", 3] }, then: 2 },
+                { case: { $gte: ["$count", 1] }, then: 1 },
+              ],
+              default: 0,
+            },
+          },
+        },
+      },
       { $sort: { date: 1 } },
     ];
     const rows = await Activity.aggregate(pipeline).exec();

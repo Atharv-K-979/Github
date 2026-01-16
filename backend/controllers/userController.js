@@ -178,7 +178,7 @@ async function getUserActivity(req, res) {
                 $group: {
                     _id: {
                         $dateToString: {
-                            format: "%Y-%m-%d",
+                            format: "%Y/%m/%d",
                             date: "$pushActivity",
                         },
                     },
@@ -189,7 +189,17 @@ async function getUserActivity(req, res) {
                 $project: {
                     _id: 0,
                     date: "$_id",
-                    count: 1,
+                    count: {
+                        $switch: {
+                            branches: [
+                                { case: { $gt: ["$count", 10] }, then: 4 },
+                                { case: { $gte: ["$count", 6] }, then: 3 },
+                                { case: { $gte: ["$count", 3] }, then: 2 },
+                                { case: { $gte: ["$count", 1] }, then: 1 },
+                            ],
+                            default: 0,
+                        },
+                    },
                 },
             },
             {

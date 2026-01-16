@@ -3,7 +3,7 @@
 1. Initialize node index.js init → creates hidden folder .s3git
 2. Add file.txt (goes to staging): node index.js add hello.txt → creates copy of the file
 3. Commit: node index.js commit "initial commit" → makes commit
-4. Push (perm. store): node index.js push → all commits pushed to s3
+4. Push (perm. store): node index.js push <repo id> → all commits pushed to s3 enter repo id that you got at time of repo creation
 5. Pull (pull latest changes): node index.js pull
 6. revert (reverts file by commit id): node index.js revert <that commit id>
 

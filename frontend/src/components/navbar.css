@@ -30,7 +30,7 @@
   width: 28px;
   height: 28px;
   border-radius: 999px;
-  background: radial-gradient(circle at 30% 30%, #58a6ff, #1f6feb);
+  background: radial-gradient(circle at 30% 30%, #30363d, #0d1117);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,9 +43,9 @@
 }
 
 .nav-logo-text {
-  font-size: 18px;
+  font-size: 25px;
   font-weight: 600;
-  color: #f0f6fc;
+  color: #ffffff;
 }
 
 .nav-links {
