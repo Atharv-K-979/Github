@@ -571,10 +571,10 @@ const RepositoryDetail = () => {
                   <div className="repo-activity-list">
                     {commitLogs.map((c, i) => (
                       <div key={i} className="repo-activity-item">
-                        <p className="repo-activity-line">User: {c.user}</p>
-                        <p className="repo-activity-line">Commit: {c.message}</p>
-                        <p className="repo-activity-line">Files: {c.files.join(", ")}</p>
-                        <p className="repo-activity-line">When: {new Date(c.when).toLocaleString()}</p>
+                        <p className="repo-activity-line"><span>User : </span>{c.user}</p>
+                        <p className="repo-activity-line"><span>Commit : </span>{c.message}</p>
+                        <p className="repo-activity-line"><span>Files : </span>{c.files.join(", ")}</p>
+                        <p className="repo-activity-line"><span>When : </span>{new Date(c.when).toLocaleString()}</p>
                       </div>
                     ))}
                   </div>
@@ -587,8 +587,7 @@ const RepositoryDetail = () => {
                 </div>
                 <div className="repo-readme-body">
                   <p className="repo-readme-placeholder">
-                    No README.md found for this repository. Use your first commit to
-                    add a README and describe your project, setup steps, and usage.
+                    No README.md found for this repository..
                   </p>
                 </div>
               </div>
@@ -604,7 +603,7 @@ const RepositoryDetail = () => {
 
               <div className="repo-meta-card">
                 <h3 className="repo-meta-title">Languages</h3>
-                <p className="repo-meta-muted">Language data not available.</p>
+                <p className="repo-meta-muted">Working</p>
               </div>
 
               <div className="repo-meta-card">
@@ -613,10 +612,10 @@ const RepositoryDetail = () => {
                   <span className="repo-meta-stat-label">Stars</span>
                   <span className="repo-meta-stat-value">{localStarCount}</span>
                 </div>
-                <div className="repo-meta-stat-row">
+                {/* <div className="repo-meta-stat-row">
                   <span className="repo-meta-stat-label">Forks</span>
                   <span className="repo-meta-stat-value">0</span>
-                </div>
+                </div> */}
               </div>
 
               <div className="repo-meta-card">
