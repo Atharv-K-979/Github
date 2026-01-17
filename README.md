@@ -260,6 +260,24 @@ npm run dev
 
 ---
 
+
+## 👤Author
+
+# 
+**Atharv Kulkarni**
+
+GitHub: https://github.com/atharv-k-979
+
+## ✍️Blog
+
+# 
+A detailed explanation of the design and implementation decisions is available here:
+
+Medium : https://medium.com/@atharvvk853/building-a-distributed-version-control-system-from-scratch-ad4f5082614a
+Video : https://drive.google.com/file/d/1XzhVTa7augUB5i_yDfI4t9SyDNedUX3L/view?usp=sharing
+
+---
+
 ## 🤝Contributing
 
 # 
@@ -275,20 +293,3 @@ Please keep commits focused, follow the existing project structure, and document
 MIT License
 
 ---
-
-## 👤Author
-
-# 
-**Atharv Kulkarni**
-
-GitHub: https://github.com/atharv-k-979
-
-## ✍️Blog / Write-Up
-
-# 
-A detailed explanation of the design and implementation decisions is available here:
-
-Medium : https://medium.com/@atharvvk853/building-a-distributed-version-control-system-from-scratch-ad4f5082614a
-
----
-#
