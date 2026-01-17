@@ -1,4 +1,4 @@
-# Distributed Version Control System (Git-Inspired)
+# 🚀Distributed Version Control System (Git-Inspired)
 
 # 
 A Git-inspired distributed version control system built from scratch to understand how version control works at a systems level — including staging, immutable commits, and remote synchronization.
@@ -7,7 +7,7 @@ This project focuses on **correctness, clarity, and architectural separation**, 
 
 ---
 
-## Overview
+## 📌Overview
 
 # 
 The system provides a workflow similar to Git:
@@ -22,7 +22,7 @@ The project is implemented using a **custom CLI**, a **REST backend**, and **clo
 
 ---
 
-## Architecture
+## 🧱Architecture
 
 # 
 The system is divided into three layers:
@@ -45,7 +45,7 @@ All cloud interactions are mediated by the backend. The CLI never communicates d
 
 ---
 
-## Design Decisions
+## ⚙️Design Decisions
 
 # 
 This project was built to better understand how distributed version control systems manage state, history, and synchronization.
@@ -60,7 +60,7 @@ The current implementation uploads complete file snapshots rather than deltas. T
 
 ---
 
-## Local Repository Structure
+## 📁Local Repository Structure
 
 # 
 Each repository contains a hidden directory:
@@ -81,7 +81,7 @@ Each repository contains a hidden directory:
 
 ---
 
-## CLI Commands
+## 🧪CLI Commands
 
 # 
 The CLI is implemented using Node.js.
@@ -135,7 +135,7 @@ Performs two coordinated operations:
 
 ---
 
-## Backend Services
+## 🖥️Backend Services
 
 ### Responsibilities
 
@@ -178,7 +178,7 @@ commits/<commit-id>/<filename>
 ---
 
 
-## Getting Started
+## 🚀Getting Started
 
 ### Prerequisites
 
@@ -226,7 +226,7 @@ npm run dev
 
 ---
 
-## Project Status
+## 📊Project Status
 
 ### Implemented
 
@@ -250,7 +250,7 @@ npm run dev
 
 ---
 
-## Lessons Learned
+## 🧠Lessons Learned
 
 # 
 - Version control relies on trust in immutable history
@@ -260,7 +260,7 @@ npm run dev
 
 ---
 
-## Contributing
+## 🤝Contributing
 
 # 
 Contributions are welcome.
@@ -269,35 +269,21 @@ Please keep commits focused, follow the existing project structure, and document
 
 ---
 
-## License
+## 📄License
 
 # 
 MIT License
 
 ---
 
-## Author
+## 👤Author
 
 # 
 **Atharv Kulkarni**
 
 GitHub: https://github.com/atharv-k-979
-## Demo Video
 
-# 
-A short demo showing:
-
-- CLI workflow (`init`, `add`, `commit`, `push`)
-- Backend synchronization
-- Web dashboard updates
-
-Demo link (2 minutes):
-
-Video https://drive.google.com/drive/folders/1OANT6e4EJJE1zAVtrIh1yC9qveFMF6hL
-
----
-
-## Blog / Write-Up
+## ✍️Blog / Write-Up
 
 # 
 A detailed explanation of the design and implementation decisions is available here:
