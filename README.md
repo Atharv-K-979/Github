@@ -274,6 +274,7 @@ GitHub: https://github.com/atharv-k-979
 A detailed explanation of the design and implementation decisions is available here:
 
 Medium : https://medium.com/@atharvvk853/building-a-distributed-version-control-system-from-scratch-ad4f5082614a
+
 Video : https://drive.google.com/file/d/1XzhVTa7augUB5i_yDfI4t9SyDNedUX3L/view?usp=sharing
 
 ---
